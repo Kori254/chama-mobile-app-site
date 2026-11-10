@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chama Mobile App: run your chama from your phone</title>
+  <meta name="description" content="Contributions, fines, loans and statements for your chama, in one app. No more WhatsApp lists and notebooks. Built in Kenya for chamas." />
+  <meta property="og:title" content="Chama Mobile App" />
+  <meta property="og:description" content="Run your chama from your phone: contributions, fines, loans and statements, all in one place." />
+  <meta name="theme-color" content="#1463E6" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231463E6'/%3E%3Ctext x='32' y='42' font-family='Arial' font-weight='800' font-size='26' fill='white' text-anchor='middle'%3ECM%3C/text%3E%3C/svg%3E" />
+  <style>
+    :root {
+      --bg: #F5F7FB; --card: #FFFFFF; --border: #E5E9F0; --text: #0F172A; --muted: #5B6B82;
+      --primary: #1463E6; --primary-dark: #0B4BB3; --primary-soft: #EBF2FE; --on-primary: #FFFFFF;
+      --green: #15803D; --green-soft: #E7F5EC; --amber: #9A5208; --amber-soft: #FBF1E4; --red: #B42318;
+      --radius: 18px; --shadow: 0 1px 2px rgba(15,23,42,.06), 0 12px 32px rgba(15,23,42,.08);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: Manrope, system-ui, sans-serif; font-size: 17px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    a { color: var(--primary); }
+    .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+    h1, h2, h3 { line-height: 1.15; margin: 0; letter-spacing: -0.02em; }
+    h1 { font-size: clamp(36px, 6vw, 60px); font-weight: 800; }
+    h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 800; }
+    h3 { font-size: 19px; font-weight: 700; }
+    p { margin: 0; }
+    .eyebrow { font-weight: 700; font-size: 14px; letter-spacing: .08em; text-transform: uppercase; color: var(--primary); }
+    .lead { font-size: 19px; color: var(--muted); max-width: 640px; }
+    section { padding: 88px 0; }
+
+    /* --------------------------------------------------------------- nav */
+    nav { position: sticky; top: 0; z-index: 20; background: rgba(245,247,251,.86); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 68px; gap: 16px; }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); font-weight: 800; font-size: 18px; }
+    .logo { width: 36px; height: 36px; border-radius: 10px; background: var(--primary); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 14px; }
+    .navlinks { display: flex; gap: 26px; align-items: center; }
+    .navlinks a { color: var(--text); text-decoration: none; font-weight: 600; font-size: 15px; }
+    .navlinks a:hover { color: var(--primary); }
+
+    /* ----------------------------------------------------------- buttons */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 0 24px; border-radius: 999px; font-weight: 700; font-size: 16px; text-decoration: none; border: 0; cursor: pointer; transition: transform .15s ease, background .15s ease; }
+    .btn:active { transform: scale(.98); }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-ghost { background: transparent; color: var(--primary); box-shadow: inset 0 0 0 2px var(--primary-soft); }
+    .btn-ghost:hover { background: var(--primary-soft); }
+    .btn-sm { min-height: 40px; padding: 0 18px; font-size: 14px; }
+
+    /* -------------------------------------------------------------- hero */
+    .hero { padding: 64px 0 88px; }
+    .hero .wrap { display: grid; grid-template-columns: 1.1fr .9fr; gap: 56px; align-items: center; }
+    .hero h1 em { font-style: normal; color: var(--primary); }
+    .hero .lead { margin-top: 20px; }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+    .trust { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 28px; color: var(--muted); font-size: 15px; font-weight: 600; }
+    .trust span::before { content: "✓"; color: var(--green); font-weight: 800; margin-right: 8px; }
+
+    /* phone mockup */
+    .phone { width: 320px; max-width: 100%; margin: 0 auto; background: #0F172A; border-radius: 44px; padding: 12px; box-shadow: 0 30px 80px rgba(20,99,230,.25), 0 8px 20px rgba(15,23,42,.2); position: relative; }
+    .screen { background: var(--bg); border-radius: 34px; overflow: hidden; padding: 18px 14px 14px; display: grid; gap: 12px; }
+    .notch { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); width: 12px; height: 12px; border-radius: 50%; background: #0F172A; z-index: 2; }
+    .statusbar { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; padding: 0 8px 2px; }
+    .greet { display: flex; justify-content: space-between; align-items: center; padding: 0 4px; }
+    .greet b { display: block; font-size: 17px; font-weight: 800; }
+    .greet small { color: var(--muted); font-size: 12px; }
+    .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--primary-soft); color: var(--primary); display: grid; place-items: center; font-weight: 800; font-size: 13px; }
+    .bal { background: var(--primary); color: #fff; border-radius: 20px; padding: 16px; display: grid; gap: 6px; }
+    .bal small { color: #DCE7FF; font-size: 11px; }
+    .bal .big { font-size: 26px; font-weight: 600; letter-spacing: -.02em; }
+    .stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+    .stat { background: rgba(255,255,255,.13); border-radius: 10px; padding: 7px 8px; }
+    .stat small { display: block; font-size: 9.5px; }
+    .stat b { font-size: 12px; font-weight: 600; }
+    .mini { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 12px; display: grid; gap: 8px; }
+    .mini-row { display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; }
+    .mini-row b { font-weight: 700; }
+    .pill { font-size: 10.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; }
+    .pill.in { background: var(--green-soft); color: var(--green); }
+    .pill.due { background: var(--amber-soft); color: var(--amber); }
+    .bar { height: 7px; border-radius: 9px; background: var(--border); overflow: hidden; }
+    .bar i { display: block; height: 100%; width: 70%; background: var(--primary); border-radius: 9px; }
+    .act { display: flex; justify-content: space-between; font-size: 12px; padding: 6px 0; border-top: 1px solid var(--border); }
+    .act:first-of-type { border-top: 0; }
+    .act span small { display: block; color: var(--muted); font-size: 10.5px; }
+    .plus { color: var(--green); font-weight: 600; }
+    .minus { color: var(--red); font-weight: 600; }
+    .tabbar { display: flex; justify-content: space-around; font-size: 10px; font-weight: 700; color: var(--muted); background: #fff; border-radius: 16px; padding: 9px 4px; border: 1px solid var(--border); }
+    .tabbar .on { color: var(--primary); }
+
+    /* ----------------------------------------------------------- problem */
+    .problem { background: #fff; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .pain-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 40px; }
+    .pain { padding: 22px; border-radius: var(--radius); background: var(--bg); }
+    .pain .emoji { font-size: 28px; }
+    .pain h3 { margin: 10px 0 6px; }
+    .pain p { color: var(--muted); font-size: 15.5px; }
+    .whatsapp { margin-top: 40px; display: grid; grid-template-columns: 1fr auto 1fr; gap: 24px; align-items: center; }
+    .wa { background: #E7FFDB; border-radius: 14px; padding: 16px 18px; font-size: 14.5px; line-height: 1.55; box-shadow: var(--shadow); white-space: pre-line; }
+    .wa b { color: #075E54; }
+    .arrow { font-size: 34px; color: var(--primary); font-weight: 800; }
+    .clean { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow); display: grid; gap: 8px; font-size: 14.5px; }
+    .clean .mini-row { font-size: 14.5px; }
+
+    /* ---------------------------------------------------------- features */
+    .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 44px; }
+    .feat { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 26px; display: grid; gap: 10px; align-content: start; }
+    .feat .icon { width: 46px; height: 46px; border-radius: 13px; background: var(--primary-soft); display: grid; place-items: center; font-size: 22px; }
+    .feat p { color: var(--muted); font-size: 15.5px; }
+
+    /* -------------------------------------------------------------- steps */
+    .steps { counter-reset: step; display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 44px; }
+    .step { position: relative; background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 26px 22px 22px; }
+    .step::before { counter-increment: step; content: counter(step); width: 36px; height: 36px; border-radius: 50%; background: var(--primary); color: #fff; font-weight: 800; display: grid; place-items: center; margin-bottom: 14px; }
+    .step p { color: var(--muted); font-size: 15px; margin-top: 6px; }
+
+    /* -------------------------------------------------------------- trust */
+    .trust-band { background: var(--primary); color: #fff; }
+    .trust-band .eyebrow { color: #BFD4FF; }
+    .trust-band .lead { color: #DCE7FF; }
+    .safe-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 40px; }
+    .safe { background: rgba(255,255,255,.1); border-radius: var(--radius); padding: 22px; display: flex; gap: 14px; }
+    .safe .tick { flex: none; width: 30px; height: 30px; border-radius: 50%; background: #fff; color: var(--primary); display: grid; place-items: center; font-weight: 800; }
+    .safe p { color: #DCE7FF; font-size: 15.5px; margin-top: 4px; }
+
+    /* ----------------------------------------------------------- download */
+    .download .box { background: #fff; border: 1px solid var(--border); border-radius: 28px; padding: 48px; display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: center; box-shadow: var(--shadow); }
+    .qr { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 16px; text-align: center; }
+    .qr img { display: block; width: 200px; height: 200px; }
+    .qr small { display: block; margin-top: 8px; color: var(--muted); font-weight: 600; font-size: 13px; }
+    .install { margin-top: 22px; display: grid; gap: 8px; color: var(--muted); font-size: 15.5px; padding-left: 20px; }
+
+    /* ---------------------------------------------------------------- faq */
+    .faq { max-width: 780px; }
+    details { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 4px 22px; margin-top: 12px; }
+    summary { cursor: pointer; font-weight: 700; padding: 16px 0; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; color: var(--primary); font-weight: 800; font-size: 22px; line-height: 1; }
+    details[open] summary::after { content: "–"; }
+    details p { color: var(--muted); padding-bottom: 18px; }
+
+    footer { padding: 40px 0 56px; color: var(--muted); font-size: 14.5px; border-top: 1px solid var(--border); }
+    footer .wrap { display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center; }
+
+    /* --------------------------------------------------------- responsive */
+    @media (max-width: 960px) {
+      .hero .wrap { grid-template-columns: 1fr; gap: 48px; }
+      .pain-grid, .steps { grid-template-columns: repeat(2, 1fr); }
+      .feat-grid { grid-template-columns: repeat(2, 1fr); }
+      .download .box { grid-template-columns: 1fr; padding: 32px 24px; }
+      .qr { justify-self: center; }
+    }
+    @media (max-width: 640px) {
+      body { font-size: 16px; }
+      section { padding: 64px 0; }
+      .hero { padding: 36px 0 64px; }
+      .navlinks a:not(.btn) { display: none; }
+      .pain-grid, .steps, .feat-grid, .safe-grid { grid-template-columns: 1fr; }
+      .whatsapp { grid-template-columns: 1fr; }
+      .arrow { transform: rotate(90deg); justify-self: center; }
+      .cta-row .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#top"><span class="logo">CM</span>Chama Mobile App</a>
+    <div class="navlinks">
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#faq">Questions</a>
+      <a class="btn btn-primary btn-sm" href="#download">Download</a>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+
+  <!-- ================================================================ hero -->
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <p class="eyebrow">Made in Kenya, for chamas</p>
+        <h1 style="margin-top:12px">Run your chama from your phone. <em>No more WhatsApp lists.</em></h1>
+        <p class="lead">Every contribution, fine and loan is recorded, worked out and shown to every member: who has paid, who owes, and exactly how much is in the account.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#download">⬇ Download for Android</a>
+          <a class="btn btn-ghost" href="#how">See how it works</a>
+        </div>
+        <div class="trust">
+          <span>Money stays in your chama's bank</span>
+          <span>Works with M-Pesa Paybill &amp; KCB</span>
+          <span>Every member sees their own statement</span>
+        </div>
+      </div>
+
+      <div aria-hidden="true">
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="statusbar"><span>9:41</span><span>●●● 100%</span></div>
+            <div class="greet">
+              <div><b>Habari, Wanjiru</b><small>Umoja Women Group</small></div>
+              <div class="avatar">WK</div>
+            </div>
+            <div class="bal">
+              <small>Chama money</small>
+              <div class="big mono">KES 184,600.00</div>
+              <div class="stats">
+                <div class="stat"><small>Savings</small><b class="mono">156,000</b></div>
+                <div class="stat"><small>Fines</small><b class="mono">2,600</b></div>
+                <div class="stat"><small>Interest</small><b class="mono">26,000</b></div>
+              </div>
+            </div>
+            <div class="mini">
+              <div class="mini-row"><b>November contribution</b><span class="pill in">Paid</span></div>
+              <div class="mini-row"><span style="color:var(--muted)">Group this month</span><span>9 of 12 paid</span></div>
+              <div class="bar"><i></i></div>
+            </div>
+            <div class="mini">
+              <div class="act"><span>Monthly contribution<small>KCB · 8 Nov</small></span><span class="plus mono">+2,000</span></div>
+              <div class="act"><span>Loan instalment<small>KCB · 5 Nov</small></span><span class="plus mono">+3,390</span></div>
+              <div class="act"><span>Late fine cancelled<small>Paid on time</small></span><span class="plus mono">+200</span></div>
+            </div>
+            <div class="tabbar"><span class="on">Home</span><span>Pay</span><span>Statement</span><span>Loans</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================= problem -->
+  <section class="problem">
+    <div class="wrap">
+      <p class="eyebrow">Sound familiar?</p>
+      <h2 style="margin-top:10px">The treasurer shouldn't need a notebook, a calculator and a group chat.</h2>
+      <div class="pain-grid">
+        <div class="pain"><div class="emoji">📋</div><h3>Lists in WhatsApp</h3><p>"Money received" messages get buried, edited and forwarded. Nobody is sure which list is the latest.</p></div>
+        <div class="pain"><div class="emoji">🤔</div><h3>"Did I pay in March?"</h3><p>Members ask the treasurer again and again because they can't see their own record.</p></div>
+        <div class="pain"><div class="emoji">🧮</div><h3>Fines and interest by hand</h3><p>Who was late? How much interest is left on that loan? It takes hours, and mistakes cause arguments.</p></div>
+        <div class="pain"><div class="emoji">😬</div><h3>Trust gets tested</h3><p>When records live on one person's phone, every question can feel like an accusation.</p></div>
+      </div>
+
+      <div class="whatsapp">
+        <div class="wa"><b>MONEY RECEIVED</b>
+1.Achieng = 2000
+2.Mwangi =2000
+3.Wanjiru=2000
+4.Otieno=2000 ✅
+5.Chebet=2000
+…</div>
+        <div class="arrow">→</div>
+        <div class="clean">
+          <div class="mini-row"><b>November 2026</b><span>9 of 12 paid · KES 18,000</span></div>
+          <div class="mini-row"><span>Achieng Odhiambo</span><span class="pill in">Paid on time</span></div>
+          <div class="mini-row"><span>Peter Mwangi</span><span class="pill due">Paid late · fine KES 200</span></div>
+          <div class="mini-row"><span>Faith Chebet</span><span class="pill due">KES 2,000 owed</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ features -->
+  <section id="features">
+    <div class="wrap">
+      <p class="eyebrow">Everything a chama does</p>
+      <h2 style="margin-top:10px">One app for the whole group.</h2>
+      <p class="lead" style="margin-top:14px">Set your own rules once: the monthly amount, the deadline, the fine, the loan interest. The app follows them for every member, every month.</p>
+      <div class="feat-grid">
+        <div class="feat"><div class="icon">📅</div><h3>Monthly contributions</h3><p>See who has paid each month, who paid late and who still owes, for one member or the whole chama.</p></div>
+        <div class="feat"><div class="icon">📩</div><h3>Reads the bank message</h3><p>Copy the KCB or Paybill SMS and the app fills in the amount, the reference and who paid. The same payment can never be recorded twice.</p></div>
+        <div class="feat"><div class="icon">⏰</div><h3>Fines, automatically</h3><p>Missed the deadline? The fine is added overnight. Paid on time but confirmed late? It's cancelled for you.</p></div>
+        <div class="feat"><div class="icon">💸</div><h3>Loans that add up</h3><p>Limits based on each member's savings, a guarantor who accepts in the app, a monthly repayment plan and interest worked out exactly.</p></div>
+        <div class="feat"><div class="icon">🧾</div><h3>Statements &amp; PDFs</h3><p>Every member sees a full statement with a running balance and can download it as a PDF to share on WhatsApp.</p></div>
+        <div class="feat"><div class="icon">👥</div><h3>Roles for officials</h3><p>Chair, Secretary and Treasurer each get the tools they need. Ordinary members see only their own details.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================== how it works -->
+  <section id="how" style="background:#fff;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+    <div class="wrap">
+      <p class="eyebrow">How it works</p>
+      <h2 style="margin-top:10px">Up and running in an afternoon.</h2>
+      <div class="steps">
+        <div class="step"><h3>The chairperson registers the chama</h3><p>Set the monthly amount, the deadline, the fine and the loan rules. They become the admin.</p></div>
+        <div class="step"><h3>Officials add the members</h3><p>Name and phone number. Each member gets a one-time code to create their own password. No SMS fees.</p></div>
+        <div class="step"><h3>Members pay as usual</h3><p>Through your chama's Paybill or bank account. The money never passes through the app.</p></div>
+        <div class="step"><h3>The treasurer records, another official confirms</h3><p>Paste the bank message and it's matched to the member. A second official confirms it before it counts.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================================================== trust -->
+  <section class="trust-band">
+    <div class="wrap">
+      <p class="eyebrow">Built for trust</p>
+      <h2 style="margin-top:10px">Records nobody can quietly change.</h2>
+      <p class="lead" style="margin-top:14px">A chama runs on trust. The app is built so that trust doesn't depend on one person.</p>
+      <div class="safe-grid">
+        <div class="safe"><div class="tick">✓</div><div><h3>Two people for every payment</h3><p>One official records it and a different official confirms it. Nobody can confirm their own deposit.</p></div></div>
+        <div class="safe"><div class="tick">✓</div><div><h3>Nothing is ever deleted</h3><p>A mistake is fixed with a correcting entry and a reason, shown on the statement for everyone to see.</p></div></div>
+        <div class="safe"><div class="tick">✓</div><div><h3>Your money stays in your bank</h3><p>The app keeps the records. Your money stays in your chama's own account, so the app can never touch it.</p></div></div>
+        <div class="safe"><div class="tick">✓</div><div><h3>Privacy between members</h3><p>Members see their own statement and the group totals, never each other's phone numbers or next of kin.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ download -->
+  <section id="download" class="download">
+    <div class="wrap">
+      <div class="box">
+        <div>
+          <p class="eyebrow">Get the app</p>
+          <h2 style="margin-top:10px">Download for Android</h2>
+          <p class="lead" style="margin-top:14px">Scan the code with your phone's camera, or tap the button on your Android phone.</p>
+          <div class="cta-row">
+            <a class="btn btn-primary" id="apk-link" href="#">⬇ Download the app (APK)</a>
+          </div>
+          <ol class="install">
+            <li>Open the download and tap <b>Install</b>.</li>
+            <li>If your phone asks, allow <b>"Install unknown apps"</b> for your browser. It's needed because the app isn't on the Play Store yet.</li>
+            <li>Open the app (it shows your chama's name) and log in with the code your chama official gave you.</li>
+          </ol>
+          <p style="margin-top:16px;color:var(--muted);font-size:15px">iPhone version coming soon.</p>
+        </div>
+        <div class="qr">
+          <img src="qr.svg" alt="QR code to download the Chama Mobile App for Android" width="200" height="200" />
+          <small>Scan to download</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================= faq -->
+  <section id="faq" style="padding-top:0">
+    <div class="wrap faq">
+      <p class="eyebrow">Questions</p>
+      <h2 style="margin-top:10px">Good questions to ask.</h2>
+      <details><summary>Does the app hold our money?</summary><p>No. Members keep paying into your chama's own Paybill or bank account. The app only keeps the records, so nobody can withdraw money through it.</p></details>
+      <details><summary>Our records are on WhatsApp and in a notebook. Can we bring them in?</summary><p>Yes. The admin can paste a WhatsApp "money received" list for past months, and the app matches each name to a member.</p></details>
+      <details><summary>Can we use our own rules?</summary><p>Yes. Your chama sets the monthly amount, the deadline, the late fine, the loan interest, how much a member can borrow and how many guarantors a loan needs.</p></details>
+      <details><summary>What if a member pays the wrong amount?</summary><p>The app shares it out for you: fines first, then unpaid months, then loan instalments. Anything extra goes to that member's savings.</p></details>
+      <details><summary>Does every member need a smartphone?</summary><p>Members with an Android phone get the full app. Officials can still record payments for members who don't have one, so their records are kept the same way.</p></details>
+      <details><summary>How much does it cost?</summary><p>It's free while we test it with our first chamas. Contact us to join early.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="brand" href="#top"><span class="logo">CM</span>Chama Mobile App</a>
+    <span>Made in Kenya 🇰🇪 · © <span id="yr"></span> Chama Mobile App</span>
+  </div>
+</footer>
+
+<script>
+  // One place to change the download link (the QR code is generated from the same URL).
+  var APK_URL = "https://github.com/Kori254/chama-mobile-app-site/releases/latest/download/B-Group-Chama.apk";
+  document.getElementById("apk-link").href = APK_URL;
+  document.getElementById("yr").textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
